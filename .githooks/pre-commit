@@ -1,0 +1,6 @@
+#!/usr/bin/env sh
+# 커밋 시 ~/.rig 사용 기록을 집계해 README.md 의 스킬 사용 통계를 갱신한다.
+# 로그가 없거나 스크립트가 실패해도 커밋은 막지 않는다.
+root="$(git rev-parse --show-toplevel)"
+node "$root/scripts/update-skill-usage.mjs" || exit 0
+git add "$root/README.md"

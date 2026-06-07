@@ -32,3 +32,29 @@ git clone --recurse-submodules https://github.com/5252yabai/skills.git
 | **wiki**          | wiki-context, wiki-query, session-ingest                                                                                                                |
 | **zoom-out**      | 큰 그림 재정렬                                                                                                                                          |
 | **miridih**       | (비공개 서브모듈)                                                                                                                                       |
+
+<!-- SKILL-USAGE:START -->
+## 스킬 사용 통계
+
+<!-- 이 구간은 .githooks/pre-commit 이 자동 생성한다. 직접 수정 금지. -->
+_총 36회 · 고유 16종 · 데이터 기준 2026-06-07 (출처: `~/.rig/usage.jsonl`)_
+
+| 순위 | 스킬 | 사용 |
+| ---- | ---- | ---- |
+| 1 | tdd | 6 |
+| 2 | handoff | 5 |
+| 3 | improve-codebase-architecture | 4 |
+| 4 | to-issues | 4 |
+| 5 | confluence-sync | 2 |
+| 6 | posting-to-slack-thread | 2 |
+| 7 | tech-interview-questions | 2 |
+| 8 | transcribing-audio-locally | 2 |
+| 9 | write-a-skill | 2 |
+| 10 | find-skills | 1 |
+| 11 | grill-me | 1 |
+| 12 | posting-service-util-daily-scrum | 1 |
+| 13 | superpowers:brainstorming | 1 |
+| 14 | uploading-to-clovanote | 1 |
+| 15 | wiki-ingest | 1 |
+| 16 | writing-sync | 1 |
+<!-- SKILL-USAGE:END -->
