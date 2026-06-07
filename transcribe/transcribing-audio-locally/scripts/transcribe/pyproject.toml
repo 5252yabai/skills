@@ -1,0 +1,18 @@
+[project]
+name = "transcribe-local"
+version = "0.1.0"
+description = "Local on-device audio transcription (mlx-whisper) + speaker diarization (pyannote). Apple Silicon only."
+requires-python = ">=3.11"
+dependencies = [
+    "mlx-whisper>=0.4",
+    "pyannote.audio>=4.0",
+    "torch>=2.0",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=8",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

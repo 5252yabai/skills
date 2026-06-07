@@ -1,0 +1,16 @@
+pyproject.toml
+src/clovanote_upload/__init__.py
+src/clovanote_upload/__main__.py
+src/clovanote_upload/browser.py
+src/clovanote_upload/cdp.py
+src/clovanote_upload/cli.py
+src/clovanote_upload/flow.py
+src/clovanote_upload.egg-info/PKG-INFO
+src/clovanote_upload.egg-info/SOURCES.txt
+src/clovanote_upload.egg-info/dependency_links.txt
+src/clovanote_upload.egg-info/entry_points.txt
+src/clovanote_upload.egg-info/requires.txt
+src/clovanote_upload.egg-info/top_level.txt
+tests/test_browser.py
+tests/test_cli.py
+tests/test_flow.py

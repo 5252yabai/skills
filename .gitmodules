@@ -1,0 +1,3 @@
+[submodule "miridih"]
+	path = miridih
+	url = https://github.com/miridih/jslee-claude-skills
