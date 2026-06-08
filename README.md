@@ -17,20 +17,18 @@ git clone --recurse-submodules https://github.com/5252yabai/skills.git
 | 그룹              | 스킬                                                                                                                                                    |
 | ----------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **agent-browser** | 브라우저 자동화 에이전트                                                                                                                                |
-| **frontend**      | frontend-design, seo-audit, storybook, vercel-react-best-practices, web-design-guidelines, web-perf, webgpu-best-practices                              |
-| **git-pr**        | commit, pull-request, create-github-pull-request-from-specification, my-recent-prs, code-review-excellence                                              |
-| **issue**         | to-issues, to-prd, triage                                                                                                                               |
+| **frontend**      | frontend-design, seo-audit, vercel-react-best-practices, webgpu-best-practices                              |
+| **git-pr**        | commit, pull-request, create-github-pull-request-from-specification, code-review-excellence                                              |
+| **issue**         | to-issues, to-prd                                                                                                                                       |
 | **learning**      | tutor, tutor-setup                                                                                                                                      |
 | **meta**          | skill-creator, write-a-skill, find-skills, setup-matt-pocock-skills                                                                                     |
 | **n8n**           | n8n-code-javascript, n8n-code-python, n8n-expression-syntax, n8n-mcp-tools-expert, n8n-node-configuration, n8n-validation-expert, n8n-workflow-patterns |
-| **pdf**           | PDF 생성·편집·폼 처리                                                                                                                                   |
 | **planning**      | grill-me, grill-with-docs, handoff, prototype                                                                                                           |
 | **refactor**      | improve-codebase-architecture, refactor-humble-object, refactor-name, refactor-plan, refactor-private-public, refactor-test-name                        |
 | **slack**         | posting-to-slack-thread                                                                                                                                 |
-| **testing**       | tdd, test-driven-development, testing-strategies, vitest, webapp-testing, diagnose                                                                      |
+| **testing**       | tdd, vitest, diagnose                                                                      |
 | **transcribe**    | transcribing-audio-locally, uploading-to-clovanote                                                                                                      |
 | **wiki**          | wiki-context, wiki-query, session-ingest                                                                                                                |
-| **zoom-out**      | 큰 그림 재정렬                                                                                                                                          |
 | **miridih**       | (비공개 서브모듈)                                                                                                                                       |
 
 <!-- SKILL-USAGE:START -->
