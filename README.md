@@ -37,7 +37,7 @@ git clone --recurse-submodules https://github.com/5252yabai/skills.git
 ## 스킬 사용 통계
 
 <!-- 이 구간은 .githooks/pre-commit 이 자동 생성한다. 직접 수정 금지. -->
-_총 36회 · 고유 16종 · 데이터 기준 2026-06-07 (출처: `~/.rig/usage.jsonl`)_
+_총 42회 · 고유 19종 · 데이터 기준 2026-06-07 (출처: `~/.rig/usage.jsonl`)_
 
 | 순위 | 스킬 | 사용 |
 | ---- | ---- | ---- |
@@ -45,16 +45,19 @@ _총 36회 · 고유 16종 · 데이터 기준 2026-06-07 (출처: `~/.rig/usage
 | 2 | handoff | 5 |
 | 3 | improve-codebase-architecture | 4 |
 | 4 | to-issues | 4 |
-| 5 | confluence-sync | 2 |
+| 5 | confluence-sync | 3 |
 | 6 | posting-to-slack-thread | 2 |
 | 7 | tech-interview-questions | 2 |
 | 8 | transcribing-audio-locally | 2 |
-| 9 | write-a-skill | 2 |
-| 10 | find-skills | 1 |
-| 11 | grill-me | 1 |
-| 12 | posting-service-util-daily-scrum | 1 |
-| 13 | superpowers:brainstorming | 1 |
-| 14 | uploading-to-clovanote | 1 |
-| 15 | wiki-ingest | 1 |
-| 16 | writing-sync | 1 |
+| 9 | wiki-ingest | 2 |
+| 10 | wiki-query | 2 |
+| 11 | write-a-skill | 2 |
+| 12 | find-skills | 1 |
+| 13 | grill-me | 1 |
+| 14 | posting-service-util-daily-scrum | 1 |
+| 15 | session-ingest | 1 |
+| 16 | superpowers:brainstorming | 1 |
+| 17 | uploading-to-clovanote | 1 |
+| 18 | wiki-lint | 1 |
+| 19 | writing-sync | 1 |
 <!-- SKILL-USAGE:END -->
