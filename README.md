@@ -35,27 +35,42 @@ git clone --recurse-submodules https://github.com/5252yabai/skills.git
 ## 스킬 사용 통계
 
 <!-- 이 구간은 .githooks/pre-commit 이 자동 생성한다. 직접 수정 금지. -->
-_총 42회 · 고유 19종 · 데이터 기준 2026-06-07 (출처: `~/.rig/usage.jsonl`)_
+_총 99회 · 고유 34종 · 데이터 기준 2026-06-12 (출처: `~/.rig/usage.jsonl`)_
 
 | 순위 | 스킬 | 사용 |
 | ---- | ---- | ---- |
-| 1 | tdd | 6 |
-| 2 | handoff | 5 |
-| 3 | improve-codebase-architecture | 4 |
-| 4 | to-issues | 4 |
-| 5 | confluence-sync | 3 |
-| 6 | posting-to-slack-thread | 2 |
-| 7 | tech-interview-questions | 2 |
-| 8 | transcribing-audio-locally | 2 |
-| 9 | wiki-ingest | 2 |
-| 10 | wiki-query | 2 |
-| 11 | write-a-skill | 2 |
-| 12 | find-skills | 1 |
-| 13 | grill-me | 1 |
-| 14 | posting-service-util-daily-scrum | 1 |
-| 15 | session-ingest | 1 |
-| 16 | superpowers:brainstorming | 1 |
-| 17 | uploading-to-clovanote | 1 |
-| 18 | wiki-lint | 1 |
-| 19 | writing-sync | 1 |
+| 1 | tdd | 8 |
+| 2 | handoff | 7 |
+| 3 | miricanvas-design-system | 7 |
+| 4 | tech-interview-questions | 7 |
+| 5 | transcribing-audio-locally | 6 |
+| 6 | write-a-skill | 6 |
+| 7 | agent-browser | 4 |
+| 8 | commit | 4 |
+| 9 | improve-codebase-architecture | 4 |
+| 10 | teach | 4 |
+| 11 | to-issues | 4 |
+| 12 | uploading-to-clovanote | 4 |
+| 13 | confluence-sync | 3 |
+| 14 | daily-scrum-report | 3 |
+| 15 | posting-service-util-daily-scrum | 3 |
+| 16 | posting-to-slack-thread | 3 |
+| 17 | grill-me | 2 |
+| 18 | intern-interview-questions | 2 |
+| 19 | wiki-ingest | 2 |
+| 20 | wiki-query | 2 |
+| 21 | find-skills | 1 |
+| 22 | prd-code-reconcile | 1 |
+| 23 | pull-request | 1 |
+| 24 | session-ingest | 1 |
+| 25 | speckit-constitution | 1 |
+| 26 | speckit-implement | 1 |
+| 27 | speckit-plan | 1 |
+| 28 | speckit-specify | 1 |
+| 29 | speckit-tasks | 1 |
+| 30 | superpowers:brainstorming | 1 |
+| 31 | superpowers:systematic-debugging | 1 |
+| 32 | superpowers:writing-skills | 1 |
+| 33 | wiki-lint | 1 |
+| 34 | writing-sync | 1 |
 <!-- SKILL-USAGE:END -->
