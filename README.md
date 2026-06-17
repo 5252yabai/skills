@@ -35,21 +35,21 @@ git clone --recurse-submodules https://github.com/5252yabai/skills.git
 ## 스킬 사용 통계
 
 <!-- 이 구간은 .githooks/pre-commit 이 자동 생성한다. 직접 수정 금지. -->
-_총 130회 · 고유 45종 · 데이터 기준 2026-06-17 (출처: `~/.rig/usage.jsonl`)_
+_총 133회 · 고유 45종 · 데이터 기준 2026-06-17 (출처: `~/.rig/usage.jsonl`)_
 
 | 순위 | 스킬 | 사용 |
 | ---- | ---- | ---- |
 | 1 | tdd | 10 |
-| 2 | transcribing-audio-locally | 9 |
-| 3 | write-a-skill | 9 |
+| 2 | transcribing-audio-locally | 10 |
+| 3 | write-a-skill | 10 |
 | 4 | handoff | 7 |
 | 5 | miricanvas-design-system | 7 |
 | 6 | tech-interview-questions | 7 |
 | 7 | commit | 6 |
-| 8 | daily-scrum-report | 5 |
-| 9 | posting-service-util-daily-scrum | 5 |
-| 10 | teach | 5 |
-| 11 | agent-browser | 4 |
+| 8 | agent-browser | 5 |
+| 9 | daily-scrum-report | 5 |
+| 10 | posting-service-util-daily-scrum | 5 |
+| 11 | teach | 5 |
 | 12 | improve-codebase-architecture | 4 |
 | 13 | to-issues | 4 |
 | 14 | uploading-to-clovanote | 4 |
