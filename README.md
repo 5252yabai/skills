@@ -18,13 +18,13 @@ git clone --recurse-submodules https://github.com/5252yabai/skills.git
 | ----------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **agent-browser** | 브라우저 자동화 에이전트                                                                                                                                |
 | **frontend**      | frontend-design, seo-audit, vercel-react-best-practices, webgpu-best-practices                                                                          |
-| **git-pr**        | commit, pull-request, create-github-pull-request-from-specification, code-review-excellence, code-review-2axis, resolving-merge-conflicts               |
+| **git-pr**        | commit, pull-request, create-github-pull-request-from-specification, code-review-2axis, resolving-merge-conflicts                                       |
 | **issue**         | to-issues, to-prd, triage                                                                                                                               |
 | **learning**      | tutor, tutor-setup                                                                                                                                      |
 | **meta**          | skill-creator, write-a-skill, find-skills, setup-matt-pocock-skills                                                                                     |
 | **n8n**           | n8n-code-javascript, n8n-code-python, n8n-expression-syntax, n8n-mcp-tools-expert, n8n-node-configuration, n8n-validation-expert, n8n-workflow-patterns |
 | **planning**      | grill-me, grill-with-docs, grilling, domain-modeling, handoff, prototype, implement, research                                                           |
-| **refactor**      | improve-codebase-architecture, codebase-design, refactor-humble-object, refactor-name, refactor-plan, refactor-private-public, refactor-test-name       |
+| **refactor**      | improve-codebase-architecture, codebase-design, refactor-humble-object, refactor-name, refactor-private-public, refactor-test-name                      |
 | **slack**         | posting-to-slack-thread                                                                                                                                 |
 | **testing**       | tdd, vitest, diagnose                                                                                                                                   |
 | **transcribe**    | transcribing-audio-locally, uploading-to-clovanote                                                                                                      |
