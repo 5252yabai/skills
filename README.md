@@ -28,7 +28,7 @@ git clone --recurse-submodules https://github.com/5252yabai/skills.git
 | **slack**         | posting-to-slack-thread                                                                                                                                 |
 | **testing**       | tdd, vitest, diagnose                                                                                                                                   |
 | **transcribe**    | transcribing-audio-locally, uploading-to-clovanote                                                                                                      |
-| **wiki**          | wiki-context, wiki-query, session-ingest                                                                                                                |
+| **wiki**          | wiki-context, wiki-query, session-ingest, persona-builder                                                                                               |
 | **miridih**       | (비공개 서브모듈)                                                                                                                                       |
 
 <!-- SKILL-USAGE:START -->
