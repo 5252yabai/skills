@@ -35,7 +35,7 @@ git clone --recurse-submodules https://github.com/5252yabai/skills.git
 ## 스킬 사용 통계
 
 <!-- 이 구간은 .githooks/pre-commit 이 자동 생성한다. 직접 수정 금지. -->
-_총 345회 · 고유 64종 · 데이터 기준 2026-07-05 (출처: `~/.rig/usage.jsonl`)_
+_총 346회 · 고유 64종 · 데이터 기준 2026-07-06 (출처: `~/.rig/usage.jsonl`)_
 
 | 순위 | 스킬 | 사용 |
 | ---- | ---- | ---- |
@@ -44,7 +44,7 @@ _총 345회 · 고유 64종 · 데이터 기준 2026-07-05 (출처: `~/.rig/usag
 | 3 | frontend-design | 20 |
 | 4 | handoff | 20 |
 | 5 | text-visual-summary | 19 |
-| 6 | daily-scrum-report | 16 |
+| 6 | daily-scrum-report | 17 |
 | 7 | sharing-internal-html | 16 |
 | 8 | tdd | 16 |
 | 9 | posting-service-util-daily-scrum | 13 |
