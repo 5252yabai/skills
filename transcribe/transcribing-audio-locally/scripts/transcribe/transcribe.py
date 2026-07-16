@@ -1,32 +1,19 @@
 #!/usr/bin/env python3
-"""Audio transcription with optional speaker diarization using mlx-whisper + pyannote."""
+"""Audio transcription with optional speaker diarization using mlx-whisper + speakrs."""
 
 import argparse
 import contextlib
 import json
 import os
-import platform
 import shutil
 import subprocess
 import sys
 import tempfile
 import time
-from dataclasses import dataclass
 
 
 DEFAULT_KO_PROMPT = "다음은 한국어 음성입니다."
 
-
-@dataclass(frozen=True)
-class DiarizationConfig:
-    """Bundle of pyannote diarization tuning parameters. Defaults match argparse defaults."""
-    num_speakers: int | None = None
-    min_speakers: int | None = None
-    max_speakers: int | None = None
-    device_pref: str = "auto"
-    embedding_batch_size: int = 32
-    segmentation_batch_size: int = 32
-    profile: bool = False
 
 MODEL_ALIASES: dict[str, str] = {
     "large-v3":       "mlx-community/whisper-large-v3-mlx",
@@ -182,7 +169,8 @@ def maybe_normalized(path: str, normalize: bool):
         out_path = os.path.join(tmpdir, "normalized.wav")
         try:
             subprocess.run(
-                ["ffmpeg", "-y", "-i", path, "-ac", "1", "-ar", "16000", "-af", "loudnorm", out_path],
+                ["ffmpeg", "-y", "-i", path, "-ac", "1", "-ar", "16000",
+                 "-af", "loudnorm", "-c:a", "pcm_s16le", out_path],
                 check=True,
                 capture_output=True,
             )
@@ -214,119 +202,61 @@ def run_whisper(
     )
 
 
-def _load_pipeline(hf_token: str):
-    """Load pyannote speaker-diarization-community-1 pipeline from HuggingFace."""
-    from pyannote.audio import Pipeline
-    return Pipeline.from_pretrained("pyannote/speaker-diarization-community-1", token=hf_token)
+def parse_speakrs_turns(stdout: str) -> list[tuple[float, float, str]]:
+    """Parse speakrs bench_turns stdout ("start\\tend\\tspeaker" per line) into turns.
+    Skips blank/malformed lines. Pure function."""
+    turns: list[tuple[float, float, str]] = []
+    for line in stdout.splitlines():
+        parts = line.strip().split("\t")
+        if len(parts) != 3:
+            continue
+        start, end, speaker = parts
+        turns.append((float(start), float(end), speaker))
+    return turns
 
 
-def _select_device(pref: str):
-    """Return a torch.device based on preference: 'auto', 'mps', or 'cpu'."""
-    import torch
-    if pref == "cpu":
-        return torch.device("cpu")
-    if pref == "mps":
-        return torch.device("mps")
-    return torch.device("mps") if torch.backends.mps.is_available() else torch.device("cpu")
+OPENBLAS_LIB = "/opt/homebrew/opt/openblas/lib"
+_SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+DEFAULT_SPEAKRS_BIN = os.path.join(_SCRIPT_DIR, ".speakrs", "bench_turns")
 
 
-@contextlib.contextmanager
-def _build_hook(profile: bool):
-    """Yield a pyannote hook. Uses TimingHook+ProgressHook in profile mode."""
-    if profile:
-        from pyannote.audio.pipelines.utils.hook import Hooks, ProgressHook, TimingHook
-        with Hooks(ProgressHook(), TimingHook()) as hook:
-            yield hook
-    else:
-        from pyannote.audio.pipelines.utils.hook import ProgressHook
-        with ProgressHook() as hook:
-            yield hook
+def _speakrs_binary() -> str:
+    """Return the speakrs bench_turns binary path ($SPEAKRS_BIN override or the
+    cached build). Exit(1) with setup instructions when missing."""
+    path = os.environ.get("SPEAKRS_BIN") or DEFAULT_SPEAKRS_BIN
+    if not os.path.exists(path):
+        print("오류: speakrs 화자 구분 바이너리를 찾을 수 없습니다.")
+        print(f"  경로: {path}")
+        print("  최초 1회 빌드가 필요합니다:")
+        print(f"    cd {_SCRIPT_DIR} && ./setup_speakrs.sh")
+        print("  또는 화자 구분 없이 전사만: --no-diarize")
+        sys.exit(1)
+    return path
 
 
-def print_env_diagnostics() -> None:
-    """Print torch/pyannote environment info for debugging slow runs."""
-    import torch
-    print("  [진단] 환경 정보")
-    print(f"    platform    : {platform.machine()} / {platform.processor()}")
-    print(f"    torch       : {torch.__version__}")
-    print(f"    MPS avail   : {torch.backends.mps.is_available()}")
-    print(f"    MPS built   : {torch.backends.mps.is_built()}")
-    print(f"    MPS_FALLBACK: {os.environ.get('PYTORCH_ENABLE_MPS_FALLBACK', '(unset)')}")
-    try:
-        import pyannote.audio
-        print(f"    pyannote    : {pyannote.audio.__version__}")
-    except Exception:
-        print("    pyannote    : (import 실패)")
-    cache = os.path.expanduser("~/.cache/huggingface/hub/models--pyannote--speaker-diarization-community-1")
-    print(f"    HF cache    : {'있음' if os.path.isdir(cache) else '없음 (첫 실행 시 다운로드)'}")
+def run_diarization(audio_path: str) -> list[tuple[float, float, str]]:
+    """Diarize a mono/16kHz/16-bit PCM wav via the speakrs (Rust/CoreML) binary.
 
+    Returns (start, end, speaker) turns. speakrs streams progress to stderr
+    (inherited by the terminal); we capture stdout and parse it. Raises on failure.
+    First run compiles the CoreML model (~200s, one-off); warm runs are fast.
+    """
+    binary = _speakrs_binary()
 
-def _run_with_cpu_fallback(pipeline, device, run):
-    """Move pipeline to device and run(); on MPS failure retry on CPU, else propagate."""
-    import torch
+    env = {**os.environ}
+    if os.path.isdir(OPENBLAS_LIB):
+        existing = env.get("DYLD_LIBRARY_PATH", "")
+        env["DYLD_LIBRARY_PATH"] = f"{OPENBLAS_LIB}:{existing}" if existing else OPENBLAS_LIB
 
-    try:
-        pipeline.to(device)
-        return run()
-    except Exception as e:
-        if device.type != "mps":
-            raise
-        mps_env = os.environ.get("PYTORCH_ENABLE_MPS_FALLBACK", "(unset)")
-        print(f"    MPS 오류 — CPU로 재시도. ({type(e).__name__}: {str(e)[:200]})")
-        print(f"    PYTORCH_ENABLE_MPS_FALLBACK={mps_env}")
-        with timed_step("    CPU 재시도 소요: {}"):
-            pipeline.to(torch.device("cpu"))
-            result = run()
-        return result
-
-
-def run_diarization(
-    audio_path: str,
-    hf_token: str,
-    config: DiarizationConfig,
-) -> list[tuple[float, float, str]]:
-    import torch
-
-    with timed_step("    모델 로드: {}"):
-        pipeline = _load_pipeline(hf_token)
-
-    try:
-        pipeline.embedding_batch_size = config.embedding_batch_size
-        pipeline.segmentation_batch_size = config.segmentation_batch_size
-        print(f"    배치 크기: seg={config.segmentation_batch_size}, emb={config.embedding_batch_size}")
-    except AttributeError as e:
-        print(f"    경고: 배치 크기 설정 실패 ({e}) — 기본값 사용")
-
-    device = _select_device(config.device_pref)
-    print(f"    디바이스: {device}")
-
-    kwargs: dict = {}
-    if config.num_speakers is not None:
-        kwargs["num_speakers"] = config.num_speakers
-    else:
-        if config.min_speakers is not None:
-            kwargs["min_speakers"] = config.min_speakers
-        if config.max_speakers is not None:
-            kwargs["max_speakers"] = config.max_speakers
-
-    # pyannote wants its input as a {"audio", "uri"} dict; that contract lives here,
-    # not in callers. The hook (TimingHook in profile mode) mutates this dict in place.
-    file_dict = {"audio": audio_path, "uri": os.path.basename(audio_path)}
-
-    def run():
-        with _build_hook(config.profile) as hook:
-            with torch.inference_mode():
-                return pipeline(file_dict, hook=hook, **kwargs)
-
-    output = _run_with_cpu_fallback(pipeline, device, run)
-
-    if config.profile and "timing" in file_dict:
-        print("    [profile] 단계별 시간:")
-        for k, v in file_dict["timing"].items():
-            print(f"      {k:30s} {v:7.2f}s")
-
-    annotation = getattr(output, "speaker_diarization", output)
-    return [(t.start, t.end, spk) for t, _, spk in annotation.itertracks(yield_label=True)]
+    proc = subprocess.run(
+        [binary, audio_path],
+        stdout=subprocess.PIPE,
+        text=True,
+        env=env,  # stderr inherits the terminal so speakrs progress stays visible
+    )
+    if proc.returncode != 0:
+        raise RuntimeError(f"speakrs 화자 구분 실패 (exit {proc.returncode}): {(proc.stderr or '')[-500:]}")
+    return parse_speakrs_turns(proc.stdout)
 
 
 def transcribe_only(
@@ -348,13 +278,11 @@ def transcribe_only(
 
 def transcribe_with_speakers(
     audio_path: str,
-    hf_token: str,
     model_repo: str,
     language: str,
     prompt: str | None,
     verbose: bool,
     normalize: bool,
-    config: DiarizationConfig,
 ) -> tuple[list[dict], dict]:
     with timed_step("    전체 소요: {}"):
         # Both Whisper and diarization share the same normalized wav — avoids double
@@ -366,8 +294,8 @@ def transcribe_with_speakers(
             ):
                 result = run_whisper(work_path, model_repo, language, prompt, verbose)
 
-            with timed_step("    화자 구분 완료 ({})", start="[2/3] 화자 구분 중..."):
-                speaker_turns = run_diarization(work_path, hf_token, config)
+            with timed_step("    화자 구분 완료 ({})", start="[2/3] 화자 구분 중... (speakrs)"):
+                speaker_turns = run_diarization(work_path)
 
         print("[3/3] 결과 합치는 중...")
         assigned = assign_speakers_by_word(result["segments"], speaker_turns)
@@ -376,26 +304,13 @@ def transcribe_with_speakers(
 
 def diarize_only(
     audio_path: str,
-    hf_token: str,
     normalize: bool,
-    config: DiarizationConfig,
 ) -> list[tuple[float, float, str]]:
     """Normalize then diarize, returning speaker turns. No transcription."""
     with timed_step("    완료 ({})", start=f"[화자 구분] {audio_path}"):
         with maybe_normalized(audio_path, normalize) as work_path:
-            speaker_turns = run_diarization(work_path, hf_token, config)
+            speaker_turns = run_diarization(work_path)
     return speaker_turns
-
-
-def resolve_hf_token(token: str | None, env: dict) -> str:
-    """Return HF token from arg (preferred) or env. Exit(1) with help if missing."""
-    resolved = token or env.get("HF_TOKEN")
-    if not resolved:
-        print("오류: HuggingFace 토큰이 필요합니다.")
-        print("  --token YOUR_TOKEN 또는 HF_TOKEN 환경변수로 전달하세요.")
-        print("  화자 구분 없이 전사만 하려면 --no-diarize 옵션을 사용하세요.")
-        sys.exit(1)
-    return resolved
 
 
 def emit(output_text: str, json_payload, *, output_path: str | None, json_path: str | None) -> None:
@@ -417,7 +332,6 @@ def emit(output_text: str, json_payload, *, output_path: str | None, json_path: 
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description="음성 전사 (화자 구분 선택 가능)")
     parser.add_argument("audio", help="오디오 파일 경로 (m4a, mp3, wav 등)")
-    parser.add_argument("--token", "-t", help="HuggingFace 토큰 (또는 HF_TOKEN 환경변수)")
     parser.add_argument("--language", "-l", default="ko", help="언어 코드 (기본값: ko)")
     parser.add_argument("--output", "-o", help="텍스트 출력 파일 경로 (없으면 터미널 출력)")
     parser.add_argument("--json", dest="json_output", metavar="PATH", help="JSON 출력 파일 경로")
@@ -434,26 +348,8 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--no-diarize", action="store_true", help="화자 구분 없이 전사만 수행")
     parser.add_argument("--no-normalize", action="store_true", help="ffmpeg 오디오 정규화 건너뜀")
     parser.add_argument("--verbose", "-v", action="store_true", help="segment별 전사 중간 출력")
-    parser.add_argument("--profile", action="store_true",
-                        help="단계별 wall-clock 측정 (TimingHook + 환경 진단 출력)")
     parser.add_argument("--diarize-only", action="store_true",
                         help="전사 생략, 화자 구분만 실행 (--no-diarize와 상호배타)")
-    parser.add_argument(
-        "--device", choices=["auto", "mps", "cpu"], default="auto",
-        help="diarization 디바이스 강제 선택 (기본: auto)",
-    )
-    parser.add_argument("--num-speakers", type=int, default=None,
-                        help="화자 수가 정확히 알려진 경우 지정")
-    parser.add_argument("--min-speakers", type=int, default=None, help="최소 화자 수 힌트")
-    parser.add_argument("--max-speakers", type=int, default=None, help="최대 화자 수 힌트")
-    parser.add_argument(
-        "--embedding-batch-size", type=int, default=32,
-        help="pyannote 임베딩 배치 크기 (기본 32, OOM 시 줄이세요)",
-    )
-    parser.add_argument(
-        "--segmentation-batch-size", type=int, default=32,
-        help="pyannote segmentation 배치 크기 (기본 32)",
-    )
     return parser
 
 
@@ -475,19 +371,6 @@ def main():
     prompt = args.prompt if args.prompt is not None else DEFAULT_KO_PROMPT
     normalize = not args.no_normalize
 
-    config = DiarizationConfig(
-        num_speakers=args.num_speakers,
-        min_speakers=args.min_speakers,
-        max_speakers=args.max_speakers,
-        device_pref=args.device,
-        embedding_batch_size=args.embedding_batch_size,
-        segmentation_batch_size=args.segmentation_batch_size,
-        profile=args.profile,
-    )
-
-    if args.profile:
-        print_env_diagnostics()
-
     json_payload = None
 
     if args.no_diarize:
@@ -496,14 +379,12 @@ def main():
         json_payload = raw
 
     elif args.diarize_only:
-        hf_token = resolve_hf_token(args.token, os.environ)
-        speaker_turns = diarize_only(args.audio, hf_token, normalize, config)
+        speaker_turns = diarize_only(args.audio, normalize)
         output_text = render_diarize_only(speaker_turns)
 
     else:
-        hf_token = resolve_hf_token(args.token, os.environ)
         results, raw = transcribe_with_speakers(
-            args.audio, hf_token, model_repo, args.language, prompt, args.verbose, normalize, config,
+            args.audio, model_repo, args.language, prompt, args.verbose, normalize,
         )
         output_text = render_diarized(results)
         json_payload = {"segments": results, "raw": raw}
