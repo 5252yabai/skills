@@ -107,7 +107,7 @@ cd ~/.agents/skills/transcribing-audio-locally/scripts/transcribe && uv run pyth
 1. 오디오 파일의 **절대경로** 확보.
    - 경로가 주어진 경우: 그대로 사용
    - 경로가 없는 경우: `cd ~/.agents/skills/transcribing-audio-locally/scripts/clovanote && uv run python -m clovanote_upload --list`로 Voice Memos 최근 목록을 조회해 사용자에게 보여준 뒤 선택을 받는다. 선택된 파일의 경로는 `~/Library/Group Containers/group.com.apple.VoiceMemos.shared/Recordings/<파일명>` 형식이다.
-2. Decision Logic으로 옵션 결정
+2. Decision Logic으로 옵션 결정. **오디오가 여러 개면 직렬 처리** — 한 건이 끝난 뒤 다음 건을 시작한다. whisper large-v3를 동시에 여러 프로세스로 띄우면 메모리가 터진다
 3. (화자 구분 시) speakrs 바이너리 확인 — 없으면 스크립트가 `./setup_speakrs.sh` 안내 후 종료. 최초 1회 빌드 필요
 4. 명령 실행 → 진행 로그(한국어)가 stdout으로 출력됨
 5. 출력 파일 경로 또는 stdout 결과를 사용자에게 전달
