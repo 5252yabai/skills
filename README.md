@@ -26,7 +26,7 @@ git clone --recurse-submodules https://github.com/5252yabai/skills.git
 | ----------------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
 | **agent-browser** | 브라우저 자동화 에이전트                                                                                                                      |
 | **frontend**      | frontend-design, seo-audit, vercel-react-best-practices, webgpu-best-practices                                                                |
-| **git-pr**        | commit, pull-request                                                                                                                          |
+| **git-pr**        | commit                                                                                                                          |
 | **learning**      | tutor, tutor-setup                                                                                                                            |
 | **meta**          | skill-creator, find-skills                                                                                                                    |
 | **n8n**           | 단일 스킬 + `references/` 7종 (mcp-tools, workflow-patterns, node-configuration, expression-syntax, code-javascript, code-python, validation) |
